@@ -1,0 +1,10 @@
+
+
+rule count_water:
+    """Cat a gro file and count W beads"""
+    input: 'trj_frame.gro'
+    output: 'water_count.txt'
+    shell:
+        '''
+        cat {input} | grep 'W' | wc -l > {output}
+        '''

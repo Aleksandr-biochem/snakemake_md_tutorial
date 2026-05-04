@@ -1,0 +1,89 @@
+import pandas as pd
+import MDAnalysis as mda
+
+def lipid_z_thickness(system: mda.Universe) -> pd.DataFrame:
+    """
+    Calculate Z-thickness of sn1 tail in each POPC lipid molecule
+    in a single MDAnalysis trajectory frame.
+
+    Parameters
+    ----------
+    System : MDAnalysis.Universe
+        Universe containing topology and trajectory.
+
+    Returns
+    -------
+    pd.DataFrame
+        Columns:
+          - resid
+          - z_min
+          - z_max
+          - z_thickness
+    """
+    
+    lipids = system.select_atoms('resname POPC')
+    z_thickness_data = []
+
+    for res in lipids.residues:
+
+        # use Sn1 tail
+        atoms = system.select_atoms(f'resid {res.resid} and name GL1 ??A').atoms
+        z = atoms.positions[:, 2].astype(float)
+        z_min = min(z)
+        z_max = max(z)
+
+        z_thickness_data.append(
+            {
+                "resid": res.resid,
+                "z_min": z_min,
+                "z_max": z_max,
+                "z_thickness": z_max - z_min,
+            }
+        )
+
+    return pd.DataFrame(z_thickness_data)
+
+
+rule all:
+    """This is a pseudo-rule that will set the workflow output"""
+    input:
+        'water_count.txt',
+        'mean_z_thickness.txt'
+
+rule count_water:
+    input: 'trj_frame.gro'
+    output: 'water_count.txt'
+    shell:
+        '''
+        cat {input} | grep 'W' | wc -l > {output}
+        '''
+
+
+rule analyse_lipids:
+    """Calculate Z-thickness for each lipid in a frame"""
+    input: 'trj_frame.gro'
+    output: 'z_thickness.csv'
+    run:
+        # load system into MDAnalysis universe
+        system = mda.Universe(input[0])
+
+        # run calculation
+        z_thickness_by_lipid = lipid_z_thickness(system)
+
+        # save the output
+        z_thickness_by_lipid.to_csv(output[0], index=False)
+
+
+rule average_z_thickness:
+    """Calculate mean Z-thickness of lipids in a frame"""
+    input: 'z_thickness.csv'
+    output: 'mean_z_thickness.txt'
+    run:
+        z_thickness_by_lipid = pd.read_csv(input[0])
+        mean_z_thickness = z_thickness_by_lipid['z_thickness'].mean()
+
+        # emulate rule failure
+        raise Exception
+
+        with open(output[0], 'w') as f:
+            f.write(str(mean_z_thickness))

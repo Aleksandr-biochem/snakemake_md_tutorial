@@ -1,0 +1,23 @@
+configfile: "config.yaml"
+
+import pandas as pd
+import MDAnalysis as mda
+from MDAnalysis.analysis import rdf
+
+import sys
+sys.path.insert(0, Path(workflow.basedir).as_posix())
+from utils import lipid_z_thickness
+
+include: 'rules/lipid_analysis.smk'
+include: 'rules/water_analysis.smk'
+
+# list all simulations
+SIMULATIONS, = glob_wildcards("{simulation_rep}/production/production.gro")
+
+rule all:
+    """This is a pseudo-rule that will set the workflow output"""
+    input:
+        expand(
+			"{simulation_replicate}/analysis/mean_z_thickness.txt",
+			simulation_replicate = SIMULATIONS
+		) + ['water_rdf.csv']

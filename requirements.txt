@@ -1,0 +1,4 @@
+pandas
+snakemake
+mdanalysis
+pulp<2.8

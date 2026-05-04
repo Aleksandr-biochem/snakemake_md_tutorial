@@ -1,0 +1,5 @@
+
+rdf_params:
+  nbins: 50
+  range_start: 0.0
+  range_end: 20.0
