@@ -26,7 +26,7 @@ I designed this tutorial for a group meeting, so it implies commentary from a pe
 
 ```
 # clone repository locally 
-git clone 
+git clone git@github.com:Aleksandr-biochem/snakemake_md_tutorial.git
 
 # create a clean environment using any manager, for example:
 python3 -m venv venv
