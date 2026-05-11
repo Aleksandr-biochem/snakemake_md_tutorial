@@ -30,6 +30,7 @@ git clone git@github.com:Aleksandr-biochem/snakemake_md_tutorial.git
 
 # create a clean environment using any manager, for example:
 python3 -m venv venv
+source venv/bin/activate
 
 # install snakemake and other packages 
 pip install -r requirements.txt 
@@ -39,7 +40,7 @@ pip install -r requirements.txt
 
 ## Example 1
 
-Quickstart by testing a workflow consisting of a single rule that will count `W` beads in an input `gro` file.
+Snakemake workflows consist of rules that describe how input files are processed and converted into output files. Quickstart by testing a workflow consisting of a single rule that will count `W` beads in an input `gro` file.
 
 Inspect the contents of `Snakefile` in `example_1`.
 
@@ -50,7 +51,7 @@ cd example_1
 snakemake --cores 1 -n
 ```
 
-Try adding a `print('Hello!')` statement in the begginning of `Snakefile`. Rerun the command above.
+Try adding a `print('Hello!')` statement in the beginning of `Snakefile`. Rerun the command above.
 You will see that 'Hello!' is printed before all the stdout logs. That's because `Snakefile` is actually executed line-by-line similarly to a `.py` file.
 
 ```
@@ -87,7 +88,7 @@ Inspect the contents of `Snakefile` in `example_2`:
 - You can also call shell commands using `shell()` function within `run` script.
 
 ```
-# see what will jobs will be executed
+# see what jobs will be executed
 snakemake --cores 1 --dry-run
 
 # try renaming rule `all` and dry-run again
